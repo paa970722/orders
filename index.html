@@ -3,392 +3,2018 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>订单手机号</title>
+<title>订单手机号记录</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f5f5f5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    background: #f5f7fa;
     color: #333;
-    padding-bottom: 60px;
+    padding: 20px;
 }
-.header {
-    background: linear-gradient(135deg, #1a73e8, #0d47a1);
-    color: white;
-    padding: 16px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+.search-panel {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
 }
-.header h1 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-.search-bar {
+.search-row {
     display: flex;
-    gap: 8px;
+    gap: 16px;
     align-items: center;
     flex-wrap: wrap;
+    margin-bottom: 12px;
 }
-.search-bar input {
-    flex: 1;
-    min-width: 150px;
+.search-row:last-child { margin-bottom: 0; }
+.search-label {
+    font-size: 14px;
+    color: #606266;
+    min-width: 80px;
+    text-align: right;
+}
+.search-input {
     padding: 8px 12px;
-    border: none;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.2);
-    color: white;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
     font-size: 14px;
     outline: none;
+    min-width: 150px;
 }
-.search-bar input::placeholder { color: rgba(255,255,255,0.7); }
-.search-bar input:focus { background: rgba(255,255,255,0.3); }
-.filter-btn {
-    padding: 6px 14px;
-    border: 1px solid rgba(255,255,255,0.5);
-    border-radius: 16px;
-    background: transparent;
-    color: white;
-    font-size: 13px;
+.search-input:focus { border-color: #409eff; }
+.search-select {
+    padding: 8px 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    background: white;
     cursor: pointer;
 }
-.filter-btn.active { background: rgba(255,255,255,0.3); border-color: white; }
-.stats {
-    padding: 10px 20px;
-    font-size: 13px;
-    color: #666;
+.search-btn {
+    padding: 8px 24px;
+    background: #409eff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.search-btn:hover { background: #66b1ff; }
+.search-btn.reset { background: #909399; }
+.search-btn.reset:hover { background: #a6a9ad; }
+
+.table-panel {
     background: white;
-    border-bottom: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
 }
 table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    margin-top: 8px;
 }
 th {
-    background: #fafafa;
-    padding: 10px 8px;
+    background: #f5f7fa;
+    padding: 12px 8px;
     text-align: left;
-    font-size: 12px;
-    color: #888;
-    font-weight: 500;
-    border-bottom: 1px solid #e0e0e0;
-    position: sticky;
-    top: 96px;
-    z-index: 50;
+    font-size: 13px;
+    color: #909399;
+    font-weight: 600;
+    border-bottom: 1px solid #ebeef5;
+    white-space: nowrap;
 }
 td {
     padding: 10px 8px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #ebeef5;
     font-size: 14px;
     vertical-align: middle;
 }
-tr:hover { background: #f8f9ff; }
-tr.called { opacity: 0.5; }
-.idx { width: 40px; color: #999; text-align: center; }
-.order-no { font-family: monospace; font-size: 13px; color: #555; word-break: break-all; }
-.phone-link {
-    color: #1a73e8;
+tr:hover { background: #f5f7fa; }
+.col-idx { width: 50px; text-align: center; color: #909399; }
+.col-order { font-family: 'Consolas', monospace; font-size: 13px; color: #606266; }
+.col-phone a {
+    color: #409eff;
     text-decoration: none;
     font-weight: 600;
-    font-size: 15px;
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: #e8f0fe;
-    transition: all 0.2s;
+    font-size: 14px;
 }
-.phone-link:hover { background: #d2e3fc; }
-.phone-link:active { background: #aecbfa; transform: scale(0.95); }
-.product { color: #666; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
-.price { color: #e53935; font-weight: 600; white-space: nowrap; }
-.checkbox-label {
+.col-phone a:hover { text-decoration: underline; }
+.col-call { white-space: nowrap; }
+.call-label {
     display: flex;
     align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-.checkbox-label input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+    gap: 6px;
     cursor: pointer;
 }
-.status-text { font-size: 12px; color: #999; }
-.called .status-text { color: #4caf50; }
+.call-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+.status-text { font-size: 13px; color: #909399; }
+.status-text.called { color: #67c23a; font-weight: 600; }
+.col-product { color: #606266; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+.col-price { color: #f56c6c; font-weight: 600; white-space: nowrap; }
+.col-time { font-size: 12px; color: #909399; white-space: nowrap; }
+.col-dialtime { font-size: 12px; color: #909399; white-space: nowrap; }
+.col-remark { min-width: 100px; }
+.remark-input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+}
+.remark-input:focus { border-color: #409eff; }
+
+.pagination {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #ebeef5;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.page-info { font-size: 14px; color: #606266; }
+.page-controls { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.page-btn {
+    padding: 4px 10px;
+    border: 1px solid #dcdfe6;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    min-width: 30px;
+    text-align: center;
+}
+.page-btn:hover { color: #409eff; border-color: #409eff; }
+.page-btn.active { background: #409eff; color: white; border-color: #409eff; }
+.page-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+.page-size-select {
+    padding: 4px 8px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-left: 8px;
+}
+
 .footer {
     text-align: center;
     padding: 20px;
     font-size: 12px;
-    color: #999;
+    color: #c0c4cc;
 }
-/* 快速拨号按钮 */
-.dial-all-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 24px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(26,115,232,0.4);
-    z-index: 200;
-    display: none;
-}
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .search-row { flex-direction: column; align-items: stretch; }
+    .search-label { text-align: left; }
+    .search-input { min-width: 100%; }
     th, td { padding: 8px 4px; font-size: 12px; }
-    .order-no { font-size: 11px; }
-    .phone-link { font-size: 13px; padding: 3px 6px; }
-    .product { display: none; }
-    .header h1 { font-size: 16px; }
+    .col-product { max-width: 120px; }
+    .col-time, .col-dialtime { display: none; }
 }
 </style>
 </head>
 <body>
-<div class="header">
-    <h1>📋 订单手机号记录</h1>
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="搜索订单号 / 手机号..." oninput="filterTable()">
-        <button class="filter-btn" id="filterBtn" onclick="toggleFilter()">未拨打</button>
+<div class="search-panel">
+    <div class="search-row">
+        <span class="search-label">写入时间:</span>
+        <input type="date" class="search-input" id="startDate">
+        <span style="color:#909399">~</span>
+        <input type="date" class="search-input" id="endDate">
+    </div>
+    <div class="search-row">
+        <span class="search-label">订单号:</span>
+        <input type="text" class="search-input" id="orderSearch" placeholder="输入订单号" style="min-width:200px">
+    </div>
+    <div class="search-row">
+        <span class="search-label">是否已拨打:</span>
+        <select class="search-select" id="callFilter">
+            <option value="all">全部</option>
+            <option value="uncalled">未拨打</option>
+            <option value="called">已拨打</option>
+        </select>
+        <button class="search-btn" onclick="applyFilter()">搜索</button>
+        <button class="search-btn reset" onclick="resetFilter()">重置</button>
     </div>
 </div>
-<div class="stats" id="statsBar">共 9 条记录 | 更新于 2026-08-08 20:12</div>
-<table>
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>订单号</th>
-            <th>手机号</th>
-            <th>商品</th>
-            <th>金额</th>
-            <th>状态</th>
-        </tr>
-    </thead>
-    <tbody id="orderTable">
-        
-        <tr onclick="toggleCall(this, 'tel:+8615784142851,1334')">
-            <td class="idx">1</td>
-            <td class="order-no">6928465609666756236</td>
-            <td class="phone-cell">
-                <a href="tel:+8615784142851,1334" class="phone-link">15784142851转1334</a>
-            </td>
-            <td class="product">【赠削笔器</td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+
+<div class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th class="col-idx">序号</th>
+                <th>订单号</th>
+                <th>手机号</th>
+                <th>拨打标记</th>
+                <th>商品名称</th>
+                <th>价格</th>
+                <th>写入时间</th>
+                <th>拨打时间</th>
+                <th>备注</th>
+            </tr>
+        </thead>
+        <tbody id="orderTable">
+            
+        <tr data-idx="1">
+            <td class="col-idx">1</td>
+            <td class="col-order">6928456695268409213</td>
+            <td class="col-phone"><a href="tel:19473333436,395">19473333436转395</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="1" onchange="toggleCall(this, 1)">
+                    <span class="status-text" id="status-1">未拨打</span>
                 </label>
             </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:42</td>
+            <td class="col-dialtime" id="dialtime-1">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="1" onchange="saveRemark(1)" placeholder="备注"></td>
         </tr>
-        <tr onclick="toggleCall(this, 'tel:+8615466117290,374')">
-            <td class="idx">2</td>
-            <td class="order-no">6954887517736146771</td>
-            <td class="phone-cell">
-                <a href="tel:+8615466117290,374" class="phone-link">15466117290转374</a>
-            </td>
-            <td class="product"></td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+        <tr data-idx="2">
+            <td class="col-idx">2</td>
+            <td class="col-order">6928463680868679061</td>
+            <td class="col-phone"><a href="tel:15782119466,3832">15782119466转3832</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="2" onchange="toggleCall(this, 2)">
+                    <span class="status-text" id="status-2">未拨打</span>
                 </label>
             </td>
+            <td class="col-product">有口袋</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:42</td>
+            <td class="col-dialtime" id="dialtime-2">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="2" onchange="saveRemark(2)" placeholder="备注"></td>
         </tr>
-        <tr onclick="toggleCall(this, 'tel:+8615789892293,1298')">
-            <td class="idx">3</td>
-            <td class="order-no">6954973643493938510</td>
-            <td class="phone-cell">
-                <a href="tel:+8615789892293,1298" class="phone-link">15789892293转1298</a>
-            </td>
-            <td class="product">【赠削笔器</td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+        <tr data-idx="3">
+            <td class="col-idx">3</td>
+            <td class="col-order">6954957837056874189</td>
+            <td class="col-phone"><a href="tel:19473333242,377">19473333242转377</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="3" onchange="toggleCall(this, 3)">
+                    <span class="status-text" id="status-3">未拨打</span>
                 </label>
             </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:42</td>
+            <td class="col-dialtime" id="dialtime-3">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="3" onchange="saveRemark(3)" placeholder="备注"></td>
         </tr>
-        <tr onclick="toggleCall(this, 'tel:+8615466117299,483')">
-            <td class="idx">4</td>
-            <td class="order-no">6928004685545438848</td>
-            <td class="phone-cell">
-                <a href="tel:+8615466117299,483" class="phone-link">15466117299转483</a>
-            </td>
-            <td class="product"></td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+        <tr data-idx="4">
+            <td class="col-idx">4</td>
+            <td class="col-order">6955002595632945055</td>
+            <td class="col-phone"><a href="tel:15784142599,5240">15784142599转5240</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="4" onchange="toggleCall(this, 4)">
+                    <span class="status-text" id="status-4">未拨打</span>
                 </label>
             </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:42</td>
+            <td class="col-dialtime" id="dialtime-4">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="4" onchange="saveRemark(4)" placeholder="备注"></td>
         </tr>
-        <tr onclick="toggleCall(this, 'tel:+8615466117297,724')">
-            <td class="idx">5</td>
-            <td class="order-no">6954943827823760674</td>
-            <td class="phone-cell">
-                <a href="tel:+8615466117297,724" class="phone-link">15466117297转724</a>
-            </td>
-            <td class="product"></td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+        <tr data-idx="5">
+            <td class="col-idx">5</td>
+            <td class="col-order">6928446569162702697</td>
+            <td class="col-phone"><a href="tel:15460960371,769">15460960371转769</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="5" onchange="toggleCall(this, 5)">
+                    <span class="status-text" id="status-5">未拨打</span>
                 </label>
             </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:42</td>
+            <td class="col-dialtime" id="dialtime-5">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="5" onchange="saveRemark(5)" placeholder="备注"></td>
         </tr>
-        <tr onclick="toggleCall(this, 'tel:+8615781202872,1660')">
-            <td class="idx">6</td>
-            <td class="order-no">6954636489134904942</td>
-            <td class="phone-cell">
-                <a href="tel:+8615781202872,1660" class="phone-link">15781202872转1660</a>
-            </td>
-            <td class="product">【赠削笔器</td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+        <tr data-idx="6">
+            <td class="col-idx">6</td>
+            <td class="col-order">6954963757137335385</td>
+            <td class="col-phone"><a href="tel:15460960326,514">15460960326转514</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="6" onchange="toggleCall(this, 6)">
+                    <span class="status-text" id="status-6">未拨打</span>
                 </label>
             </td>
+            <td class="col-product">有口袋</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:42</td>
+            <td class="col-dialtime" id="dialtime-6">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="6" onchange="saveRemark(6)" placeholder="备注"></td>
         </tr>
-        <tr onclick="toggleCall(this, 'tel:+8617895095198,3205')">
-            <td class="idx">7</td>
-            <td class="order-no">6928495427862101607</td>
-            <td class="phone-cell">
-                <a href="tel:+8617895095198,3205" class="phone-link">17895095198转3205</a>
-            </td>
-            <td class="product">【377+577+877</td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+        <tr data-idx="7">
+            <td class="col-idx">7</td>
+            <td class="col-order">6955003943045567711</td>
+            <td class="col-phone"><a href="tel:15460960392,762">15460960392转762</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="7" onchange="toggleCall(this, 7)">
+                    <span class="status-text" id="status-7">未拨打</span>
                 </label>
             </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:42</td>
+            <td class="col-dialtime" id="dialtime-7">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="7" onchange="saveRemark(7)" placeholder="备注"></td>
         </tr>
-        <tr onclick="toggleCall(this, 'tel:+8615466117273,476')">
-            <td class="idx">8</td>
-            <td class="order-no">6954983359572022684</td>
-            <td class="phone-cell">
-                <a href="tel:+8615466117273,476" class="phone-link">15466117273转476</a>
-            </td>
-            <td class="product">【赠削笔器</td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+        <tr data-idx="8">
+            <td class="col-idx">8</td>
+            <td class="col-order">6954963199094428705</td>
+            <td class="col-phone"><a href="tel:15781237014,4647">15781237014转4647</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="8" onchange="toggleCall(this, 8)">
+                    <span class="status-text" id="status-8">未拨打</span>
                 </label>
             </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:42</td>
+            <td class="col-dialtime" id="dialtime-8">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="8" onchange="saveRemark(8)" placeholder="备注"></td>
         </tr>
-        <tr onclick="toggleCall(this, 'tel:+8615781063910,5307')">
-            <td class="idx">9</td>
-            <td class="order-no">6928464331477515792</td>
-            <td class="phone-cell">
-                <a href="tel:+8615781063910,5307" class="phone-link">15781063910转5307</a>
-            </td>
-            <td class="product">【赠削笔器</td>
-            <td class="price"></td>
-            <td class="call-status">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="call-checkbox" onchange="saveStatus()">
-                    <span class="status-text">未拨打</span>
+        <tr data-idx="9">
+            <td class="col-idx">9</td>
+            <td class="col-order">6954965208611493139</td>
+            <td class="col-phone"><a href="tel:15460960303,746">15460960303转746</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="9" onchange="toggleCall(this, 9)">
+                    <span class="status-text" id="status-9">未拨打</span>
                 </label>
             </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-9">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="9" onchange="saveRemark(9)" placeholder="备注"></td>
         </tr>
-    </tbody>
-</table>
-<div class="footer">平安助手 · 2026-08-08 20:12</div>
+        <tr data-idx="10">
+            <td class="col-idx">10</td>
+            <td class="col-order">6928493019491041205</td>
+            <td class="col-phone"><a href="tel:15460960368,571">15460960368转571</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="10" onchange="toggleCall(this, 10)">
+                    <span class="status-text" id="status-10">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-10">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="10" onchange="saveRemark(10)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="11">
+            <td class="col-idx">11</td>
+            <td class="col-order">6954988924840121764</td>
+            <td class="col-phone"><a href="tel:15460960324,776">15460960324转776</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="11" onchange="toggleCall(this, 11)">
+                    <span class="status-text" id="status-11">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-11">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="11" onchange="saveRemark(11)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="12">
+            <td class="col-idx">12</td>
+            <td class="col-order">6928479586997534545</td>
+            <td class="col-phone"><a href="tel:15781293806,6313">15781293806转6313</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="12" onchange="toggleCall(this, 12)">
+                    <span class="status-text" id="status-12">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-12">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="12" onchange="saveRemark(12)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="13">
+            <td class="col-idx">13</td>
+            <td class="col-order">6928393328435101670</td>
+            <td class="col-phone"><a href="tel:15460960322,851">15460960322转851</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="13" onchange="toggleCall(this, 13)">
+                    <span class="status-text" id="status-13">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">105-120斤</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-13">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="13" onchange="saveRemark(13)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="14">
+            <td class="col-idx">14</td>
+            <td class="col-order">6954976949097862336</td>
+            <td class="col-phone"><a href="tel:15460960397,834">15460960397转834</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="14" onchange="toggleCall(this, 14)">
+                    <span class="status-text" id="status-14">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-14">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="14" onchange="saveRemark(14)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="15">
+            <td class="col-idx">15</td>
+            <td class="col-order">6928359079287225828</td>
+            <td class="col-phone"><a href="tel:15782712076,5466">15782712076转5466</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="15" onchange="toggleCall(this, 15)">
+                    <span class="status-text" id="status-15">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">有口袋</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-15">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="15" onchange="saveRemark(15)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="16">
+            <td class="col-idx">16</td>
+            <td class="col-order">6954963387205490064</td>
+            <td class="col-phone"><a href="tel:15460960399,712">15460960399转712</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="16" onchange="toggleCall(this, 16)">
+                    <span class="status-text" id="status-16">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-16">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="16" onchange="saveRemark(16)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="17">
+            <td class="col-idx">17</td>
+            <td class="col-order">6954993489561392684</td>
+            <td class="col-phone"><a href="tel:15782130054,4875">15782130054转4875</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="17" onchange="toggleCall(this, 17)">
+                    <span class="status-text" id="status-17">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-17">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="17" onchange="saveRemark(17)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="18">
+            <td class="col-idx">18</td>
+            <td class="col-order">6928480687762013397</td>
+            <td class="col-phone"><a href="tel:15460960385,512">15460960385转512</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="18" onchange="toggleCall(this, 18)">
+                    <span class="status-text" id="status-18">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">单上衣</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-18">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="18" onchange="saveRemark(18)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="19">
+            <td class="col-idx">19</td>
+            <td class="col-order">6928481863271284628</td>
+            <td class="col-phone"><a href="tel:15782103713,8182">15782103713转8182</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="19" onchange="toggleCall(this, 19)">
+                    <span class="status-text" id="status-19">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-19">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="19" onchange="saveRemark(19)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="20">
+            <td class="col-idx">20</td>
+            <td class="col-order">6928472787559218832</td>
+            <td class="col-phone"><a href="tel:19473333472,028">19473333472转028</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="20" onchange="toggleCall(this, 20)">
+                    <span class="status-text" id="status-20">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-20">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="20" onchange="saveRemark(20)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="21">
+            <td class="col-idx">21</td>
+            <td class="col-order">6928382091830525211</td>
+            <td class="col-phone"><a href="tel:19473333506,477">19473333506转477</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="21" onchange="toggleCall(this, 21)">
+                    <span class="status-text" id="status-21">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:43</td>
+            <td class="col-dialtime" id="dialtime-21">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="21" onchange="saveRemark(21)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="22">
+            <td class="col-idx">22</td>
+            <td class="col-order">6954975010542131027</td>
+            <td class="col-phone"><a href="tel:15460960302,310">15460960302转310</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="22" onchange="toggleCall(this, 22)">
+                    <span class="status-text" id="status-22">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-22">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="22" onchange="saveRemark(22)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="23">
+            <td class="col-idx">23</td>
+            <td class="col-order">6954997511186355617</td>
+            <td class="col-phone"><a href="tel:15781311575,9878">15781311575转9878</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="23" onchange="toggleCall(this, 23)">
+                    <span class="status-text" id="status-23">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-23">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="23" onchange="saveRemark(23)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="24">
+            <td class="col-idx">24</td>
+            <td class="col-order">6954929361837036772</td>
+            <td class="col-phone"><a href="tel:15460960377,028">15460960377转028</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="24" onchange="toggleCall(this, 24)">
+                    <span class="status-text" id="status-24">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-24">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="24" onchange="saveRemark(24)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="25">
+            <td class="col-idx">25</td>
+            <td class="col-order">6955000238114608973</td>
+            <td class="col-phone"><a href="tel:19473333427,598">19473333427转598</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="25" onchange="toggleCall(this, 25)">
+                    <span class="status-text" id="status-25">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-25">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="25" onchange="saveRemark(25)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="26">
+            <td class="col-idx">26</td>
+            <td class="col-order">6928468833486536277</td>
+            <td class="col-phone"><a href="tel:19473333524,310">19473333524转310</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="26" onchange="toggleCall(this, 26)">
+                    <span class="status-text" id="status-26">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-26">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="26" onchange="saveRemark(26)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="27">
+            <td class="col-idx">27</td>
+            <td class="col-order">6928382660359585705</td>
+            <td class="col-phone"><a href="tel:19473333481,951">19473333481转951</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="27" onchange="toggleCall(this, 27)">
+                    <span class="status-text" id="status-27">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-27">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="27" onchange="saveRemark(27)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="28">
+            <td class="col-idx">28</td>
+            <td class="col-order">6928479011939974799</td>
+            <td class="col-phone"><a href="tel:15460960362,355">15460960362转355</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="28" onchange="toggleCall(this, 28)">
+                    <span class="status-text" id="status-28">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">有口袋</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-28">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="28" onchange="saveRemark(28)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="29">
+            <td class="col-idx">29</td>
+            <td class="col-order">6928487236429971166</td>
+            <td class="col-phone"><a href="tel:15460960398,797">15460960398转797</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="29" onchange="toggleCall(this, 29)">
+                    <span class="status-text" id="status-29">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-29">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="29" onchange="saveRemark(29)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="30">
+            <td class="col-idx">30</td>
+            <td class="col-order">6928491610718567960</td>
+            <td class="col-phone"><a href="tel:19473333490,595">19473333490转595</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="30" onchange="toggleCall(this, 30)">
+                    <span class="status-text" id="status-30">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">有口袋</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-30">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="30" onchange="saveRemark(30)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="31">
+            <td class="col-idx">31</td>
+            <td class="col-order">6928457110105128566</td>
+            <td class="col-phone"><a href="tel:15781510597,9775">15781510597转9775</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="31" onchange="toggleCall(this, 31)">
+                    <span class="status-text" id="status-31">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-31">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="31" onchange="saveRemark(31)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="32">
+            <td class="col-idx">32</td>
+            <td class="col-order">6928487583557712955</td>
+            <td class="col-phone"><a href="tel:15781355576,5401">15781355576转5401</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="32" onchange="toggleCall(this, 32)">
+                    <span class="status-text" id="status-32">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-32">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="32" onchange="saveRemark(32)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="33">
+            <td class="col-idx">33</td>
+            <td class="col-order">6928494121728179413</td>
+            <td class="col-phone"><a href="tel:15781327552,2038">15781327552转2038</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="33" onchange="toggleCall(this, 33)">
+                    <span class="status-text" id="status-33">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-33">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="33" onchange="saveRemark(33)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="34">
+            <td class="col-idx">34</td>
+            <td class="col-order">6928464179177356659</td>
+            <td class="col-phone"><a href="tel:15782109475,2607">15782109475转2607</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="34" onchange="toggleCall(this, 34)">
+                    <span class="status-text" id="status-34">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">120-135斤</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:44</td>
+            <td class="col-dialtime" id="dialtime-34">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="34" onchange="saveRemark(34)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="35">
+            <td class="col-idx">35</td>
+            <td class="col-order">6954979001035790051</td>
+            <td class="col-phone"><a href="tel:19473333445,632">19473333445转632</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="35" onchange="toggleCall(this, 35)">
+                    <span class="status-text" id="status-35">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-35">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="35" onchange="saveRemark(35)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="36">
+            <td class="col-idx">36</td>
+            <td class="col-order">6928498018727525858</td>
+            <td class="col-phone"><a href="tel:19473333454,592">19473333454转592</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="36" onchange="toggleCall(this, 36)">
+                    <span class="status-text" id="status-36">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-36">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="36" onchange="saveRemark(36)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="37">
+            <td class="col-idx">37</td>
+            <td class="col-order">6954845673001588569</td>
+            <td class="col-phone"><a href="tel:15460960366,477">15460960366转477</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="37" onchange="toggleCall(this, 37)">
+                    <span class="status-text" id="status-37">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-37">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="37" onchange="saveRemark(37)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="38">
+            <td class="col-idx">38</td>
+            <td class="col-order">6928493438477237405</td>
+            <td class="col-phone"><a href="tel:15781781858,9193">15781781858转9193</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="38" onchange="toggleCall(this, 38)">
+                    <span class="status-text" id="status-38">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-38">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="38" onchange="saveRemark(38)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="39">
+            <td class="col-idx">39</td>
+            <td class="col-order">6955009227352314937</td>
+            <td class="col-phone"><a href="tel:15460960396,020">15460960396转020</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="39" onchange="toggleCall(this, 39)">
+                    <span class="status-text" id="status-39">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-39">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="39" onchange="saveRemark(39)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="40">
+            <td class="col-idx">40</td>
+            <td class="col-order">6955000964678489511</td>
+            <td class="col-phone"><a href="tel:15460960340,760">15460960340转760</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="40" onchange="toggleCall(this, 40)">
+                    <span class="status-text" id="status-40">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-40">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="40" onchange="saveRemark(40)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="41">
+            <td class="col-idx">41</td>
+            <td class="col-order">6954956191661823196</td>
+            <td class="col-phone"><a href="tel:15460960367,029">15460960367转029</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="41" onchange="toggleCall(this, 41)">
+                    <span class="status-text" id="status-41">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">单上衣</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-41">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="41" onchange="saveRemark(41)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="42">
+            <td class="col-idx">42</td>
+            <td class="col-order">6928494397960060878</td>
+            <td class="col-phone"><a href="tel:15460960372,021">15460960372转021</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="42" onchange="toggleCall(this, 42)">
+                    <span class="status-text" id="status-42">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-42">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="42" onchange="saveRemark(42)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="43">
+            <td class="col-idx">43</td>
+            <td class="col-order">6928473721919405709</td>
+            <td class="col-phone"><a href="tel:15782790556,6715">15782790556转6715</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="43" onchange="toggleCall(this, 43)">
+                    <span class="status-text" id="status-43">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-43">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="43" onchange="saveRemark(43)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="44">
+            <td class="col-idx">44</td>
+            <td class="col-order">6928492691625377231</td>
+            <td class="col-phone"><a href="tel:15460960308,370">15460960308转370</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="44" onchange="toggleCall(this, 44)">
+                    <span class="status-text" id="status-44">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-44">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="44" onchange="saveRemark(44)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="45">
+            <td class="col-idx">45</td>
+            <td class="col-order">6928279838813551641</td>
+            <td class="col-phone"><a href="tel:19473333542,378">19473333542转378</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="45" onchange="toggleCall(this, 45)">
+                    <span class="status-text" id="status-45">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-45">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="45" onchange="saveRemark(45)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="46">
+            <td class="col-idx">46</td>
+            <td class="col-order">6928489117420912463</td>
+            <td class="col-phone"><a href="tel:15460960346,576">15460960346转576</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="46" onchange="toggleCall(this, 46)">
+                    <span class="status-text" id="status-46">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-46">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="46" onchange="saveRemark(46)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="47">
+            <td class="col-idx">47</td>
+            <td class="col-order">6928474018070494432</td>
+            <td class="col-phone"><a href="tel:15460960364,312">15460960364转312</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="47" onchange="toggleCall(this, 47)">
+                    <span class="status-text" id="status-47">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:45</td>
+            <td class="col-dialtime" id="dialtime-47">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="47" onchange="saveRemark(47)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="48">
+            <td class="col-idx">48</td>
+            <td class="col-order">6954961142173078674</td>
+            <td class="col-phone"><a href="tel:15460960325,7311">15460960325转7311</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="48" onchange="toggleCall(this, 48)">
+                    <span class="status-text" id="status-48">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-48">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="48" onchange="saveRemark(48)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="49">
+            <td class="col-idx">49</td>
+            <td class="col-order">6954826536429622931</td>
+            <td class="col-phone"><a href="tel:15460960344,7311">15460960344转7311</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="49" onchange="toggleCall(this, 49)">
+                    <span class="status-text" id="status-49">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-49">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="49" onchange="saveRemark(49)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="50">
+            <td class="col-idx">50</td>
+            <td class="col-order">6928481189348081373</td>
+            <td class="col-phone"><a href="tel:19473333409,312">19473333409转312</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="50" onchange="toggleCall(this, 50)">
+                    <span class="status-text" id="status-50">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-50">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="50" onchange="saveRemark(50)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="51">
+            <td class="col-idx">51</td>
+            <td class="col-order">6928440678790626697</td>
+            <td class="col-phone"><a href="tel:15460960348,871">15460960348转871</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="51" onchange="toggleCall(this, 51)">
+                    <span class="status-text" id="status-51">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-51">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="51" onchange="saveRemark(51)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="52">
+            <td class="col-idx">52</td>
+            <td class="col-order">6928479313213685475</td>
+            <td class="col-phone"><a href="tel:19473333588,053">19473333588转053</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="52" onchange="toggleCall(this, 52)">
+                    <span class="status-text" id="status-52">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">90-105斤</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-52">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="52" onchange="saveRemark(52)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="53">
+            <td class="col-idx">53</td>
+            <td class="col-order">6955000741905372485</td>
+            <td class="col-phone"><a href="tel:15782134257,1380">15782134257转1380</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="53" onchange="toggleCall(this, 53)">
+                    <span class="status-text" id="status-53">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-53">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="53" onchange="saveRemark(53)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="54">
+            <td class="col-idx">54</td>
+            <td class="col-order">6954972417349064599</td>
+            <td class="col-phone"><a href="tel:15782111019,1546">15782111019转1546</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="54" onchange="toggleCall(this, 54)">
+                    <span class="status-text" id="status-54">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-54">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="54" onchange="saveRemark(54)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="55">
+            <td class="col-idx">55</td>
+            <td class="col-order">6954977525301843555</td>
+            <td class="col-phone"><a href="tel:15782129828,2606">15782129828转2606</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="55" onchange="toggleCall(this, 55)">
+                    <span class="status-text" id="status-55">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-55">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="55" onchange="saveRemark(55)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="56">
+            <td class="col-idx">56</td>
+            <td class="col-order">6928502274874703327</td>
+            <td class="col-phone"><a href="tel:15460960369,755">15460960369转755</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="56" onchange="toggleCall(this, 56)">
+                    <span class="status-text" id="status-56">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-56">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="56" onchange="saveRemark(56)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="57">
+            <td class="col-idx">57</td>
+            <td class="col-order">6954982671978468850</td>
+            <td class="col-phone"><a href="tel:15460960329,752">15460960329转752</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="57" onchange="toggleCall(this, 57)">
+                    <span class="status-text" id="status-57">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-57">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="57" onchange="saveRemark(57)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="58">
+            <td class="col-idx">58</td>
+            <td class="col-order">6954992244369528695</td>
+            <td class="col-phone"><a href="tel:19473331852,020">19473331852转020</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="58" onchange="toggleCall(this, 58)">
+                    <span class="status-text" id="status-58">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">有口袋</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-58">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="58" onchange="saveRemark(58)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="59">
+            <td class="col-idx">59</td>
+            <td class="col-order">6955007340338549901</td>
+            <td class="col-phone"><a href="tel:15781232427,5877">15781232427转5877</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="59" onchange="toggleCall(this, 59)">
+                    <span class="status-text" id="status-59">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:46</td>
+            <td class="col-dialtime" id="dialtime-59">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="59" onchange="saveRemark(59)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="60">
+            <td class="col-idx">60</td>
+            <td class="col-order">6954966255602701749</td>
+            <td class="col-phone"><a href="tel:15460960801,020">15460960801转020</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="60" onchange="toggleCall(this, 60)">
+                    <span class="status-text" id="status-60">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-60">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="60" onchange="saveRemark(60)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="61">
+            <td class="col-idx">61</td>
+            <td class="col-order">6928430005822848016</td>
+            <td class="col-phone"><a href="tel:15460960894,512">15460960894转512</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="61" onchange="toggleCall(this, 61)">
+                    <span class="status-text" id="status-61">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-61">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="61" onchange="saveRemark(61)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="62">
+            <td class="col-idx">62</td>
+            <td class="col-order">6954936313505846957</td>
+            <td class="col-phone"><a href="tel:19473331816,879">19473331816转879</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="62" onchange="toggleCall(this, 62)">
+                    <span class="status-text" id="status-62">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-62">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="62" onchange="saveRemark(62)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="63">
+            <td class="col-idx">63</td>
+            <td class="col-order">6928500211485408414</td>
+            <td class="col-phone"><a href="tel:15460960842,579">15460960842转579</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="63" onchange="toggleCall(this, 63)">
+                    <span class="status-text" id="status-63">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-63">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="63" onchange="saveRemark(63)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="64">
+            <td class="col-idx">64</td>
+            <td class="col-order">6954942592669193297</td>
+            <td class="col-phone"><a href="tel:19473331825,512">19473331825转512</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="64" onchange="toggleCall(this, 64)">
+                    <span class="status-text" id="status-64">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-64">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="64" onchange="saveRemark(64)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="65">
+            <td class="col-idx">65</td>
+            <td class="col-order">6928461868657180336</td>
+            <td class="col-phone"><a href="tel:18412124256,2992">18412124256转2992</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="65" onchange="toggleCall(this, 65)">
+                    <span class="status-text" id="status-65">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-65">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="65" onchange="saveRemark(65)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="66">
+            <td class="col-idx">66</td>
+            <td class="col-order">6928458876973186944</td>
+            <td class="col-phone"><a href="tel:15460960847,372">15460960847转372</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="66" onchange="toggleCall(this, 66)">
+                    <span class="status-text" id="status-66">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-66">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="66" onchange="saveRemark(66)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="67">
+            <td class="col-idx">67</td>
+            <td class="col-order">6928410294585884509</td>
+            <td class="col-phone"><a href="tel:15460960804,317">15460960804转317</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="67" onchange="toggleCall(this, 67)">
+                    <span class="status-text" id="status-67">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-67">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="67" onchange="saveRemark(67)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="68">
+            <td class="col-idx">68</td>
+            <td class="col-order">6928463875950148895</td>
+            <td class="col-phone"><a href="tel:15460960843,374">15460960843转374</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="68" onchange="toggleCall(this, 68)">
+                    <span class="status-text" id="status-68">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-68">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="68" onchange="saveRemark(68)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="69">
+            <td class="col-idx">69</td>
+            <td class="col-order">6928467331474751325</td>
+            <td class="col-phone"><a href="tel:15460960868,668">15460960868转668</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="69" onchange="toggleCall(this, 69)">
+                    <span class="status-text" id="status-69">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-69">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="69" onchange="saveRemark(69)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="70">
+            <td class="col-idx">70</td>
+            <td class="col-order">6954940701583284028</td>
+            <td class="col-phone"><a href="tel:15460960896,718">15460960896转718</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="70" onchange="toggleCall(this, 70)">
+                    <span class="status-text" id="status-70">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-70">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="70" onchange="saveRemark(70)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="71">
+            <td class="col-idx">71</td>
+            <td class="col-order">6928493157617138873</td>
+            <td class="col-phone"><a href="tel:19473331931,373">19473331931转373</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="71" onchange="toggleCall(this, 71)">
+                    <span class="status-text" id="status-71">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:47</td>
+            <td class="col-dialtime" id="dialtime-71">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="71" onchange="saveRemark(71)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="72">
+            <td class="col-idx">72</td>
+            <td class="col-order">6954985011452122157</td>
+            <td class="col-phone"><a href="tel:19473331968,759">19473331968转759</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="72" onchange="toggleCall(this, 72)">
+                    <span class="status-text" id="status-72">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-72">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="72" onchange="saveRemark(72)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="73">
+            <td class="col-idx">73</td>
+            <td class="col-order">6928485535087688939</td>
+            <td class="col-phone"><a href="tel:19473331843,558">19473331843转558</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="73" onchange="toggleCall(this, 73)">
+                    <span class="status-text" id="status-73">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-73">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="73" onchange="saveRemark(73)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="74">
+            <td class="col-idx">74</td>
+            <td class="col-order">6928464310774824674</td>
+            <td class="col-phone"><a href="tel:15781201850,6875">15781201850转6875</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="74" onchange="toggleCall(this, 74)">
+                    <span class="status-text" id="status-74">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-74">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="74" onchange="saveRemark(74)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="75">
+            <td class="col-idx">75</td>
+            <td class="col-order">6954955157231507010</td>
+            <td class="col-phone"><a href="tel:15782128158,7440">15782128158转7440</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="75" onchange="toggleCall(this, 75)">
+                    <span class="status-text" id="status-75">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-75">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="75" onchange="saveRemark(75)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="76">
+            <td class="col-idx">76</td>
+            <td class="col-order">6955002393999447800</td>
+            <td class="col-phone"><a href="tel:19473332034,577">19473332034转577</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="76" onchange="toggleCall(this, 76)">
+                    <span class="status-text" id="status-76">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">单上衣</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-76">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="76" onchange="saveRemark(76)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="77">
+            <td class="col-idx">77</td>
+            <td class="col-order">6954987133759723260</td>
+            <td class="col-phone"><a href="tel:19473331940,020">19473331940转020</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="77" onchange="toggleCall(this, 77)">
+                    <span class="status-text" id="status-77">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-77">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="77" onchange="saveRemark(77)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="78">
+            <td class="col-idx">78</td>
+            <td class="col-order">6928477117323509579</td>
+            <td class="col-phone"><a href="tel:15781039505,2091">15781039505转2091</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="78" onchange="toggleCall(this, 78)">
+                    <span class="status-text" id="status-78">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-78">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="78" onchange="saveRemark(78)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="79">
+            <td class="col-idx">79</td>
+            <td class="col-order">6954987248524989877</td>
+            <td class="col-phone"><a href="tel:15460960866,663">15460960866转663</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="79" onchange="toggleCall(this, 79)">
+                    <span class="status-text" id="status-79">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-79">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="79" onchange="saveRemark(79)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="80">
+            <td class="col-idx">80</td>
+            <td class="col-order">6928477386329980378</td>
+            <td class="col-phone"><a href="tel:15460960865,591">15460960865转591</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="80" onchange="toggleCall(this, 80)">
+                    <span class="status-text" id="status-80">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-80">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="80" onchange="saveRemark(80)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="81">
+            <td class="col-idx">81</td>
+            <td class="col-order">6954994518314719071</td>
+            <td class="col-phone"><a href="tel:15460960824,769">15460960824转769</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="81" onchange="toggleCall(this, 81)">
+                    <span class="status-text" id="status-81">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-81">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="81" onchange="saveRemark(81)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="82">
+            <td class="col-idx">82</td>
+            <td class="col-order">6928473605047418027</td>
+            <td class="col-phone"><a href="tel:15782121050,6778">15782121050转6778</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="82" onchange="toggleCall(this, 82)">
+                    <span class="status-text" id="status-82">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:48</td>
+            <td class="col-dialtime" id="dialtime-82">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="82" onchange="saveRemark(82)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="83">
+            <td class="col-idx">83</td>
+            <td class="col-order">6955003152454980825</td>
+            <td class="col-phone"><a href="tel:15781359103,2022">15781359103转2022</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="83" onchange="toggleCall(this, 83)">
+                    <span class="status-text" id="status-83">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-83">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="83" onchange="saveRemark(83)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="84">
+            <td class="col-idx">84</td>
+            <td class="col-order">6955016008762660354</td>
+            <td class="col-phone"><a href="tel:13230843893,4793">13230843893转4793</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="84" onchange="toggleCall(this, 84)">
+                    <span class="status-text" id="status-84">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-84">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="84" onchange="saveRemark(84)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="85">
+            <td class="col-idx">85</td>
+            <td class="col-order">6928465785606143543</td>
+            <td class="col-phone"><a href="tel:15781313347,0122">15781313347转0122</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="85" onchange="toggleCall(this, 85)">
+                    <span class="status-text" id="status-85">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-85">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="85" onchange="saveRemark(85)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="86">
+            <td class="col-idx">86</td>
+            <td class="col-order">6928483980726468133</td>
+            <td class="col-phone"><a href="tel:15460960895,872">15460960895转872</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="86" onchange="toggleCall(this, 86)">
+                    <span class="status-text" id="status-86">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-86">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="86" onchange="saveRemark(86)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="87">
+            <td class="col-idx">87</td>
+            <td class="col-order">6928470410290822726</td>
+            <td class="col-phone"><a href="tel:15782109264,6638">15782109264转6638</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="87" onchange="toggleCall(this, 87)">
+                    <span class="status-text" id="status-87">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">135-150斤</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-87">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="87" onchange="saveRemark(87)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="88">
+            <td class="col-idx">88</td>
+            <td class="col-order">6928482594795257350</td>
+            <td class="col-phone"><a href="tel:19473332016,398">19473332016转398</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="88" onchange="toggleCall(this, 88)">
+                    <span class="status-text" id="status-88">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-88">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="88" onchange="saveRemark(88)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="89">
+            <td class="col-idx">89</td>
+            <td class="col-order">6928499888864001991</td>
+            <td class="col-phone"><a href="tel:15460960892,578">15460960892转578</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="89" onchange="toggleCall(this, 89)">
+                    <span class="status-text" id="status-89">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-89">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="89" onchange="saveRemark(89)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="90">
+            <td class="col-idx">90</td>
+            <td class="col-order">6928498346237590818</td>
+            <td class="col-phone"><a href="tel:15781320149,7914">15781320149转7914</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="90" onchange="toggleCall(this, 90)">
+                    <span class="status-text" id="status-90">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-90">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="90" onchange="saveRemark(90)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="91">
+            <td class="col-idx">91</td>
+            <td class="col-order">6928483290167869115</td>
+            <td class="col-phone"><a href="tel:15795941034,5104">15795941034转5104</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="91" onchange="toggleCall(this, 91)">
+                    <span class="status-text" id="status-91">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-91">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="91" onchange="saveRemark(91)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="92">
+            <td class="col-idx">92</td>
+            <td class="col-order">6954968245435045340</td>
+            <td class="col-phone"><a href="tel:15460960863,735">15460960863转735</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="92" onchange="toggleCall(this, 92)">
+                    <span class="status-text" id="status-92">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-92">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="92" onchange="saveRemark(92)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="93">
+            <td class="col-idx">93</td>
+            <td class="col-order">6928461919130320076</td>
+            <td class="col-phone"><a href="tel:15781784892,8124">15781784892转8124</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="93" onchange="toggleCall(this, 93)">
+                    <span class="status-text" id="status-93">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-93">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="93" onchange="saveRemark(93)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="94">
+            <td class="col-idx">94</td>
+            <td class="col-order">6928461990700220362</td>
+            <td class="col-phone"><a href="tel:18412123401,1021">18412123401转1021</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="94" onchange="toggleCall(this, 94)">
+                    <span class="status-text" id="status-94">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-94">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="94" onchange="saveRemark(94)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="95">
+            <td class="col-idx">95</td>
+            <td class="col-order">6928461846530981047</td>
+            <td class="col-phone"><a href="tel:15781788891,7870">15781788891转7870</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="95" onchange="toggleCall(this, 95)">
+                    <span class="status-text" id="status-95">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:49</td>
+            <td class="col-dialtime" id="dialtime-95">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="95" onchange="saveRemark(95)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="96">
+            <td class="col-idx">96</td>
+            <td class="col-order">6928473195676335302</td>
+            <td class="col-phone"><a href="tel:15781063042,9819">15781063042转9819</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="96" onchange="toggleCall(this, 96)">
+                    <span class="status-text" id="status-96">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:50</td>
+            <td class="col-dialtime" id="dialtime-96">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="96" onchange="saveRemark(96)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="97">
+            <td class="col-idx">97</td>
+            <td class="col-order">6928468524167560266</td>
+            <td class="col-phone"><a href="tel:15782125147,7473">15782125147转7473</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="97" onchange="toggleCall(this, 97)">
+                    <span class="status-text" id="status-97">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:50</td>
+            <td class="col-dialtime" id="dialtime-97">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="97" onchange="saveRemark(97)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="98">
+            <td class="col-idx">98</td>
+            <td class="col-order">6928401736404074103</td>
+            <td class="col-phone"><a href="tel:15460960898,053">15460960898转053</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="98" onchange="toggleCall(this, 98)">
+                    <span class="status-text" id="status-98">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:50</td>
+            <td class="col-dialtime" id="dialtime-98">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="98" onchange="saveRemark(98)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="99">
+            <td class="col-idx">99</td>
+            <td class="col-order">6928465514006871400</td>
+            <td class="col-phone"><a href="tel:15784145269,1086">15784145269转1086</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="99" onchange="toggleCall(this, 99)">
+                    <span class="status-text" id="status-99">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product"></td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:50</td>
+            <td class="col-dialtime" id="dialtime-99">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="99" onchange="saveRemark(99)" placeholder="备注"></td>
+        </tr>
+        <tr data-idx="100">
+            <td class="col-idx">100</td>
+            <td class="col-order">6954970948216493665</td>
+            <td class="col-phone"><a href="tel:15782795343,6145">15782795343转6145</a></td>
+            <td class="col-call">
+                <label class="call-label">
+                    <input type="checkbox" class="call-checkbox" data-idx="100" onchange="toggleCall(this, 100)">
+                    <span class="status-text" id="status-100">未拨打</span>
+                </label>
+            </td>
+            <td class="col-product">两件套装</td>
+            <td class="col-price"></td>
+            <td class="col-time">2026-08-08 20:30:50</td>
+            <td class="col-dialtime" id="dialtime-100">--</td>
+            <td class="col-remark"><input type="text" class="remark-input" data-idx="100" onchange="saveRemark(100)" placeholder="备注"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+        <div class="page-info" id="pageInfo">共 100 条</div>
+        <div class="page-controls">
+            <button class="page-btn" id="prevBtn" onclick="changePage(-1)">«</button>
+            <span id="pageNumbers"></span>
+            <button class="page-btn" id="nextBtn" onclick="changePage(1)">»</button>
+            <span style="margin-left:12px;font-size:13px;color:#606266">第 <span id="pageNum">1</span>/<span id="totalPages">1</span> 页</span>
+            <select class="page-size-select" id="pageSize" onchange="changePageSize()">
+                <option value="20">20 条/页</option>
+                <option value="50" selected>50 条/页</option>
+                <option value="100">100 条/页</option>
+                <option value="500">500 条/页</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="footer">平安助手 · 2026-08-08 20:30:50</div>
 
 <script>
-let showUncalledOnly = false;
-const STORAGE_KEY = 'pingan_call_status';
+const STORAGE_KEY = 'pingan_order_status_v5';
+let allRows = [];
+let filteredRows = [];
+let currentPage = 1;
+let pageSize = 50;
 
-function saveStatus() {
-    const checkboxes = document.querySelectorAll('.call-checkbox');
-    const statuses = {};
-    checkboxes.forEach((cb, i) => {
-        statuses[i] = cb.checked;
-        const row = cb.closest('tr');
-        const statusText = row.querySelector('.status-text');
-        if (cb.checked) {
-            row.classList.add('called');
-            statusText.textContent = '已拨打';
-        } else {
-            row.classList.remove('called');
-            statusText.textContent = '未拨打';
-        }
-    });
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(statuses)); } catch(e) {}
-    updateStats();
+function init() {
+    allRows = Array.from(document.querySelectorAll('#orderTable tr'));
+    loadStatus();
+    applyFilter();
 }
 
 function loadStatus() {
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (!saved) return;
-        const statuses = JSON.parse(saved);
-        const checkboxes = document.querySelectorAll('.call-checkbox');
-        checkboxes.forEach((cb, i) => {
-            if (statuses[i]) {
-                cb.checked = true;
-                const row = cb.closest('tr');
-                row.classList.add('called');
-                row.querySelector('.status-text').textContent = '已拨打';
+        const data = JSON.parse(saved);
+        allRows.forEach(row => {
+            const idx = row.dataset.idx;
+            if (data[idx]) {
+                const cb = row.querySelector('.call-checkbox');
+                const status = row.querySelector('.status-text');
+                const dialtime = document.getElementById('dialtime-' + idx);
+                const remark = row.querySelector('.remark-input');
+                if (data[idx].called) {
+                    cb.checked = true;
+                    status.textContent = '已拨打';
+                    status.classList.add('called');
+                }
+                if (data[idx].dialtime) {
+                    dialtime.textContent = data[idx].dialtime;
+                }
+                if (data[idx].remark) {
+                    remark.value = data[idx].remark;
+                }
             }
         });
-        updateStats();
     } catch(e) {}
 }
 
-function updateStats() {
-    const all = document.querySelectorAll('#orderTable tr');
-    const visible = document.querySelectorAll('#orderTable tr:not([style*="display: none"])');
-    const called = document.querySelectorAll('#orderTable tr.called').length;
-    document.getElementById('statsBar').textContent =
-        `共 ${visible.length} 条记录 | 已拨打 ${called} | 更新于 2026-08-08 20:12`;
-}
-
-function toggleCall(row, telHref) {
-    // 点击行不拨号，只有点击手机号链接才拨号
-}
-
-function toggleFilter() {
-    showUncalledOnly = !showUncalledOnly;
-    const btn = document.getElementById('filterBtn');
-    btn.classList.toggle('active', showUncalledOnly);
-    btn.textContent = showUncalledOnly ? '全部' : '未拨打';
-    filterTable();
-}
-
-function filterTable() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const rows = document.querySelectorAll('#orderTable tr');
-    rows.forEach(row => {
-        const orderNo = row.querySelector('.order-no')?.textContent.toLowerCase() || '';
-        const phone = row.querySelector('.phone-link')?.textContent.toLowerCase() || '';
-        const matchQuery = !query || orderNo.includes(query) || phone.includes(query);
-        const matchFilter = !showUncalledOnly || !row.classList.contains('called');
-        row.style.display = (matchQuery && matchFilter) ? '' : 'none';
+function saveAllStatus() {
+    const data = {};
+    allRows.forEach(row => {
+        const idx = row.dataset.idx;
+        const cb = row.querySelector('.call-checkbox');
+        const status = row.querySelector('.status-text');
+        const dialtime = document.getElementById('dialtime-' + idx);
+        const remark = row.querySelector('.remark-input');
+        data[idx] = {
+            called: cb.checked,
+            dialtime: dialtime.textContent,
+            remark: remark.value
+        };
     });
-    updateStats();
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+function toggleCall(checkbox, idx) {
+    const status = document.getElementById('status-' + idx);
+    const dialtime = document.getElementById('dialtime-' + idx);
+    if (checkbox.checked) {
+        status.textContent = '已拨打';
+        status.classList.add('called');
+        dialtime.textContent = new Date().toLocaleString('zh-CN', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        }).replace(/\//g, '-');
+    } else {
+        status.textContent = '未拨打';
+        status.classList.remove('called');
+        dialtime.textContent = '--';
+    }
+    saveAllStatus();
+    applyFilter();
+}
+
+function saveRemark(idx) {
+    saveAllStatus();
+}
+
+function applyFilter() {
+    const orderQuery = document.getElementById('orderSearch').value.toLowerCase();
+    const callFilter = document.getElementById('callFilter').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    filteredRows = allRows.filter(row => {
+        const orderNo = row.querySelector('.col-order').textContent.toLowerCase();
+        const cb = row.querySelector('.call-checkbox');
+        const isCalled = cb.checked;
+        const rowTime = row.querySelector('.col-time').textContent.trim();
+
+        const matchOrder = !orderQuery || orderNo.includes(orderQuery);
+        let matchCall = true;
+        if (callFilter === 'called') matchCall = isCalled;
+        else if (callFilter === 'uncalled') matchCall = !isCalled;
+
+        let matchDate = true;
+        if (startDate || endDate) {
+            const rowDate = rowTime.split(' ')[0];
+            if (startDate && rowDate < startDate) matchDate = false;
+            if (endDate && rowDate > endDate) matchDate = false;
+        }
+
+        return matchOrder && matchCall && matchDate;
+    });
+
+    currentPage = 1;
+    renderPage();
+}
+
+function resetFilter() {
+    document.getElementById('orderSearch').value = '';
+    document.getElementById('callFilter').value = 'all';
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    applyFilter();
+}
+
+function renderPage() {
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    const pageRows = filteredRows.slice(start, end);
+
+    allRows.forEach(row => row.style.display = 'none');
+    pageRows.forEach(row => row.style.display = '');
+
+    const totalPages = Math.ceil(filteredRows.length / pageSize) || 1;
+    document.getElementById('pageInfo').textContent = `共 ${filteredRows.length} 条`;
+    document.getElementById('pageNum').textContent = currentPage;
+    document.getElementById('totalPages').textContent = totalPages;
+
+    // 生成页码按钮
+    const pageNumbers = document.getElementById('pageNumbers');
+    pageNumbers.innerHTML = '';
+    const maxVisible = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+    if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+    for (let p = startPage; p <= endPage; p++) {
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (p === currentPage ? ' active' : '');
+        btn.textContent = p;
+        btn.onclick = () => goToPage(p);
+        pageNumbers.appendChild(btn);
+    }
+
+    document.getElementById('prevBtn').disabled = currentPage <= 1;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+}
+
+function changePage(delta) {
+    const totalPages = Math.ceil(filteredRows.length / pageSize) || 1;
+    const newPage = currentPage + delta;
+    if (newPage >= 1 && newPage <= totalPages) {
+        goToPage(newPage);
+    }
+}
+
+function goToPage(page) {
+    currentPage = page;
+    renderPage();
+}
+
+function changePageSize() {
+    pageSize = parseInt(document.getElementById('pageSize').value);
+    currentPage = 1;
+    renderPage();
 }
 
 // 初始化
-loadStatus();
-updateStats();
+init();
 </script>
 </body>
 </html>
